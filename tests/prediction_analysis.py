@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """ prediction_analysis.py
 Further analysis of the predictions. Currently separate from the package.

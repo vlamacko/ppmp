@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import glob
 import json
@@ -365,7 +365,7 @@ def _prediction_to_csv(protein_df, protein_name):
 
     directory = os.path.join(os.getcwd(), 'out', 'prediction')
     handle_missing_dirs(directory)
-    protein_df.to_csv(os.path.abspath(os.path.join(directory, protein_name + '.csv')))
+    protein_df.to_csv(handle_missing_dirs(os.path.join(directory, protein_name + '.csv')))
 
 
 def _validate_order_significance(all_df):

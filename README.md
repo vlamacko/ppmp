@@ -121,6 +121,7 @@ students of Engineering Mathematics at University of Bristol. The project report
 - [x] add missing graphs, code
 - [x] create setup.py
 - [ ] function annotations, type hints
-- [ ] test cross-platform compatibility
+- [x] test cross-platform compatibility
+  - Ubuntu
 - [x] test virtualenv (linux)
 - [ ] integrate `./tests/prediction_analysis.py` into the package
