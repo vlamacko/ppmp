@@ -77,7 +77,7 @@ modular protein structures. See Documentation section for more information.
 For more information (docstrings, comments) see the source code. There are also 
 few tests available in `/tests/` (both command-line and module use).
 
-### Input datat
+### Input data
 
 The default folder structure/naming scheme is the following. It is partially 
 adjustable. More options will be added in future. The `data` folder should be 
@@ -118,9 +118,9 @@ student of Engineering Mathematics at University of Bristol. The project report
 - [x] create working tests
 - [x] relative paths, should work on all OS
 - [x] add paper as a doc
-- [ ] add missing graphs, code
+- [x] add missing graphs, code
 - [x] create setup.py
 - [ ] function annotations, type hints
 - [ ] test cross-platform compatibility
 - [ ] test virtualenv (linux)
-- [ ] integrate `./tests/prediction_analysis.py` into the paclage
+- [ ] integrate `./tests/prediction_analysis.py` into the package
