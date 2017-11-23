@@ -1,0 +1,8 @@
+statsmodels
+tqdm
+scipy
+seaborn
+pandas
+numpy
+matplotlib
+biopython
