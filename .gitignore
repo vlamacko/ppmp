@@ -2,7 +2,8 @@
 .vscode/
 .idea/
 tests/data/
-tests/data/out/
+tests/out/
+old/
 
 # PYTHON SPECIFIC
 # Byte-compiled / optimized / DLL files

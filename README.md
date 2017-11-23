@@ -108,7 +108,7 @@ customisation to be done.
 
 This module has been created as a tool for an undergraduate 4 week project 
 about predicting dynamics in modular protein structures. It was conducted by 5 
-student of Engineering Mathematics at University of Bristol. The project report
+students of Engineering Mathematics at University of Bristol. The project report
 `/docs/protein-dynamics-report.pdf` can be used as an additional documentation.
 
 ## Progress
