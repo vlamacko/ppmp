@@ -262,15 +262,6 @@ def create_triplets(all_df):
                     _access_list(i + 1, module_list)
                 )
             )
-            # unordered_list.append(
-            #     (
-            #         _access_list(i, module_list),
-            #         {
-            #             _access_list(i - 1, module_list),
-            #             _access_list(i + 1, module_list)
-            #         }
-            #     )
-            # )
 
     all_df['triplet'] = triplet_list
     # all_df['unordered'] = unordered_list
@@ -295,7 +286,6 @@ def dist_plot(all_df):
         sns.distplot(single_rmsd_array, ax=ax_hist, kde=True, hist=True, rug=True)
         f.suptitle(single)
         f.savefig(handle_missing_dirs('./out/figs/kde-hist/' + single + '.pdf'))
-        # f.savefig('./out/figs/kde-hist/' + single + '.png')
         plt.close(f)
 
 
@@ -307,7 +297,6 @@ def violin_plot(all_df):
                        y=all_df[all_df['module'] == single]['rmsd'])
         plt.tight_layout()
         plt.savefig(handle_missing_dirs('./out/figs/violin/' + single + '.pdf'))  # TODO Better output
-        # plt.savefig('./out/figs/violin/png/' + single + '.png')
         plt.close()
 
 
