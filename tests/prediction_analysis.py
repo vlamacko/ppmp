@@ -31,17 +31,19 @@ for path in glob.glob(CSV_PATH + '*.csv'):
     df = pd.read_csv(path)
 
     for i in range(len(df['rmsd mean'])):
+        # Calculate absolute error
         if df['prediction mean'][i] == df['single mean'][i]:
             single += 1
             single_error += abs((df['prediction mean'][i] - df['rmsd mean'][i]))
         else:
             triplet += 1
             triplet_error += abs((df['prediction mean'][i] - df['rmsd mean'][i]))
-
+        # Reject correctly predicted
         if df['prediction mean'][i] - df['prediction std'][i] \
                 <= df['rmsd mean'][i] \
                 <= df['prediction mean'][i] + df['prediction std'][i]:
             q += 1
+        # Populate dictionary for the graph
         else:
             if df['prediction mean'][i] == df['single mean'][i]:
                 single_count += 1
