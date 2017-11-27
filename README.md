@@ -124,4 +124,4 @@ students of Engineering Mathematics at University of Bristol. The project report
 - [x] test cross-platform compatibility
   - Ubuntu
 - [x] test virtualenv (linux)
-- [ ] integrate `./tests/prediction_analysis.py` into the package
+- [x] integrate `./tests/prediction_analysis.py` into the package
