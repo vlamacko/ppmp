@@ -4,8 +4,9 @@ import glob
 import json
 import os
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import pandas as pd
 import seaborn as sns
 from pandas.plotting import parallel_coordinates
@@ -128,20 +129,24 @@ def analysis(csv_path='./data/csv/',
                 all_test[protein_name]['rmsd mean'] = temp_pro
 
         # Make a prediction
-        for protein_name in tqdm(all_test, desc='Making prediction'):
+        for protein_name in tqdm(all_test, desc='Making and exporting predictions'):
             all_test[protein_name]['single dist'] = all_test[protein_name]['module'].apply(single_dist,
                                                                                            args=(single_df,))
             all_test[protein_name]['prediction'] = all_test[protein_name]['triplet'].apply(predict_module,
                                                                                            args=(single_df, triplet_df))
+            all_test[protein_name]['triplet pred'] = \
+                all_test[protein_name]['single dist'] != all_test[protein_name]['prediction']
+            all_test[protein_name] = _prediction_to_csv(all_test[protein_name], protein_name)
+            all_test[protein_name]['abs pred err'] = \
+                abs(all_test[protein_name]['rmsd mean'] - all_test[protein_name]['prediction mean'])
+
         for protein_name in tqdm(all_test, desc='Exporting and plotting predictions'):
-            _prediction_to_csv(all_test[protein_name], protein_name)
-            # Plot
             x = np.linspace(0, 5, 10000)
             for i, r in all_test[protein_name].iterrows():
-                single_normal = stats.norm.pdf(x, r['single dist'][0], r['single dist'][1])
+                single_normal = stats.norm.pdf(x, r['single mean'], r['single std'])
                 plt.plot(x, single_normal, label=r['module'])
-                if r['single dist'] != r['prediction']:
-                    triplet_normal = stats.norm.pdf(x, r['prediction'][0], r['prediction'][1])
+                if r['triplet pred']:
+                    triplet_normal = stats.norm.pdf(x, r['prediction mean'], r['prediction std'])
                     plt.plot(x, triplet_normal, label=r['triplet'])
 
                 plt.axvline(r['rmsd mean'], color='r', label='Actual mean of RMSD')
@@ -151,6 +156,47 @@ def analysis(csv_path='./data/csv/',
                 figs_path = os.path.join(os.getcwd(), 'out', 'figs', 'prediction', protein_name + '-' + str(i) + '.pdf')
                 plt.savefig(handle_missing_dirs(figs_path))
                 plt.close()
+
+        test_table = pd.concat([i for i in all_test.values()])
+        correct = test_table['prediction mean'] - test_table['prediction std'] <= test_table['rmsd mean']
+        correct = correct & (test_table['rmsd mean'] <= test_table['prediction mean'] + test_table['prediction std'])
+        test_table = test_table[~ correct].reset_index(drop=True)
+
+        x = np.arange(len(test_table))
+        myx_ticks = test_table['module']
+
+        plt.figure(figsize=(17, 14))
+        plt.xticks(x, myx_ticks)
+        plt.title('Plot Demonstrating the Error of the Incorrectly Predicted Modules', fontsize=20)
+        plt.xlabel('Module', fontsize=20)
+        plt.ylabel('RMSD', fontsize=20)
+
+        for i in tqdm(range(len(test_table['module'])), desc='Plotting error graph'):
+            if test_table['triplet pred'][i]:
+                plt.scatter(x[i], test_table['prediction mean'][i], c='b', marker='o', s=75)
+                plt.errorbar(x[i],
+                             test_table['prediction mean'][i],
+                             yerr=test_table['prediction std'][i],
+                             fmt='o',
+                             c='b',
+                             elinewidth=2)
+            else:
+                plt.scatter(x[i], test_table['prediction mean'][i], c='r', marker='o', s=75)
+                plt.errorbar(x[i],
+                             test_table['prediction mean'][i],
+                             yerr=test_table['prediction std'][i],
+                             fmt='o',
+                             c='r',
+                             elinewidth=2)
+
+        plot = plt.scatter(x, test_table['rmsd mean'], marker='o', c='black', label='The average RMSD from simulation')
+        red_patch = mpatches.Patch(color='r', label='Predictions made from a module distribution')
+        blue_patch = mpatches.Patch(color='b', label='Predictions made from the triplet distribution')
+        data_patch = mpatches.Patch(color='black', label='The average RMSD from simulation')
+        plt.legend(handles=[red_patch, blue_patch, plot], prop={'size': 20})
+
+        plt.savefig("./out/prediction/analysis.pdf")
+        plt.close()
 
         return all_df, single_df, triplet_df, all_test
     else:
@@ -364,8 +410,9 @@ def _prediction_to_csv(protein_df, protein_name):
     protein_df = protein_df.drop('single dist', axis=1)
 
     directory = os.path.join(os.getcwd(), 'out', 'prediction')
-    handle_missing_dirs(directory)
     protein_df.to_csv(handle_missing_dirs(os.path.join(directory, protein_name + '.csv')))
+
+    return protein_df
 
 
 def _validate_order_significance(all_df):

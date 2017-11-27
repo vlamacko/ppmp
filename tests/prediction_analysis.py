@@ -81,4 +81,4 @@ blue_patch = mpatches.Patch(color='b', label='Predictions made from the triplet 
 data_patch = mpatches.Patch(color='black', label='The average RMSD from simulation')
 plt.legend(handles=[red_patch, blue_patch, plot], prop={'size': 20})
 
-plt.savefig("./out/prediction/analysis.pdf")
+plt.savefig("./out/prediction/analysis_old.pdf")
