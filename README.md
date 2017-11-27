@@ -113,14 +113,14 @@ students of Engineering Mathematics at University of Bristol. The project report
 
 ## Progress
 
-- [ ] finish writing README
+- [x] finish writing README
 - [x] create ./requirements.txt
 - [x] create working tests
 - [x] relative paths, should work on all OS
 - [x] add paper as a doc
 - [x] add missing graphs, code
 - [x] create setup.py
-- [ ] function annotations, type hints
+- [x] ~~function annotations, type hints~~
 - [x] test cross-platform compatibility
   - Ubuntu
 - [x] test virtualenv (linux)
