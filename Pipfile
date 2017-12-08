@@ -1,0 +1,21 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+statsmodels = "*"
+tqdm = "*"
+scipy = "*"
+seaborn = "*"
+pandas = "*"
+numpy = "*"
+matplotlib = "*"
+biopython = "*"
+
+
+[dev-packages]
+
