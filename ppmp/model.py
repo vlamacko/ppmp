@@ -21,6 +21,24 @@ from ppmp.scripts.utils import handle_missing_dirs
 
 def analysis(csv_path='./data/csv/',
              test_path=None, sim=True, parallel=True, dist=True, violin=True, whitney=True, order=True, lvplot=True):
+    """
+
+    :param csv_path: Path to the preprocessed csv files containing pre-calculated
+     rmsd values. Training data.
+    :param test_path: Path to test data.
+    :param sim: True in order to attempt to predict the perturbations of the test
+     data.
+    :param parallel: Plot parallel graph, comparision of different perturbations
+     within one test protein.
+    :param dist: Plot distribution plot where the central module is a histogram
+    and the triplets are KDEs.
+    :param violin: Plot violin plots for all triplets. Group by central module.
+    :param whitney: Plot a triplet with its corresponding central module and 
+    show Mann-Whitney test statistics result. 
+    :param order: Test whether order is importnat. Experimental.
+    :param lvplot: Plot lvplot for all triplets.
+    :return:
+    """
     protein_df = read_csv(csv_path=csv_path)
     all_df = pd.concat(protein_df)
 
@@ -269,6 +287,12 @@ def create_triplets(all_df):
 
 
 def dist_plot(all_df):
+    """Plot distribution plot where the central module is a histogram and the 
+    triplets are KDEs.
+
+    :param all_df:
+    :return:
+    """
 
     for single in tqdm(all_df['module'].unique(), desc='Creating histogram/KDE plots'):
         f, (ax_box, ax_hist) = plt.subplots(2, sharex='all', gridspec_kw={"height_ratios": (.15, .85)})
@@ -290,6 +314,11 @@ def dist_plot(all_df):
 
 
 def violin_plot(all_df):
+    """Plot violin plots for all triplets. Group by central module.
+
+    :param all_df:
+    :return:
+    """
     for single in tqdm(all_df['module'].unique(), desc='Creating violin plots'):
         plt.xticks(rotation=90)
         xlabel, lookup = alpha_label(all_df[all_df['module'] == single]['triplet'])
@@ -301,6 +330,11 @@ def violin_plot(all_df):
 
 
 def lv_plot(all_df):
+    """Plot lvplot for all triplets.
+
+    :param all_df:
+    :return:
+    """
     sns.lvplot(x='module', y='rmsd', data=all_df.sort_values(['rmsd'], ascending=[True]), scale='linear', palette='mako')
     plt.xticks(rotation=60)
     plt.suptitle('RMSD Range per Module')
@@ -329,6 +363,13 @@ def _access_list(index, iterable):
 
 
 def mann_whitney(all_df, plot):
+    """ Perform Mann-Whitney test.
+
+    :param all_df:
+    :param plot: If true plot a triplet with its corresponding central module and show 
+    Mann-Whitney test statistics result.
+    :return:
+    """
     from statsmodels.stats import multitest
     df = pd.DataFrame(columns=['triplet', 'u', 'p'])
     for triplet in tqdm(all_df['triplet'].unique(), desc='Calculating Mann-Whitney test statistic'):
@@ -350,12 +391,28 @@ def mann_whitney(all_df, plot):
 
 
 def shapiro_test(rmsd):
+    """Perform Shapiro test.
+
+    :param rmsd: Array of rmsd values.
+    :return: Tuple of test statistic w, p-value and boolean indicating whether
+    the distribution can be considered normal.
+    """
     w, p = stats.shapiro(rmsd)
     normal = p > 0.05
     return w, p, normal
 
 
 def predict_module(triplet, single_df, triplet_df):
+    """Predict module based on the test statistic calculated for corresponding
+    triplet and central module single.
+
+    :param triplet: Triplet to predict.
+    :param single_df: Dataframe of all singles containing all the necessary 
+    test result.
+    :param triplet_df:Dataframe of all triplets containing all the necessary 
+    test result.
+    :return: Tuple (preidcted_mean, predicted_std)
+    """
 
     triplet_row = triplet_df[triplet_df['triplet'] == triplet]
 
@@ -378,6 +435,12 @@ def predict_module(triplet, single_df, triplet_df):
 
 
 def single_dist(single, single_df):
+    """Look up mean and standard deviation of a single module.
+
+    :param single: Single module to lookup.
+    :param single_df: Dataframe of all possible single modules.
+    :return:
+    """
 
     mean = single_df[single_df['module'] == single]['mean'].values[0]
     std = single_df[single_df['module'] == single]['std'].values[0]
@@ -386,6 +449,13 @@ def single_dist(single, single_df):
 
 
 def _prediction_to_csv(protein_df, protein_name):
+    """Make and export the prediciton to csv, make small changes to the 
+    Dataframe structure.
+
+    :param protein_df:
+    :param protein_name: 
+    :return:
+    """
     new_col_list = ['prediction mean', 'prediction std']
     for n, col in enumerate(new_col_list):
         protein_df[col] = protein_df['prediction'].apply(lambda prediction: prediction[n])
@@ -405,6 +475,11 @@ def _prediction_to_csv(protein_df, protein_name):
 
 
 def _validate_order_significance(all_df):
+    """Test whether order matters. Experimental.
+
+    :param all_df:
+    :return:
+    """
     from statsmodels.stats import multitest
     unordered_df = pd.DataFrame(columns=['A', 'B', 'u', 'p'])
     for A in all_df['triplet'].unique():

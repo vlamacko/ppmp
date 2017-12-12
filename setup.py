@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
    name='ppmp',
-   version='1.0.0',
+   version='1.0.1',
    description='Prediction of Perturbations of Modular Protein structures by triplet analysis',
    author='Vladimir Macko',
    author_email='vlamacko@gmail.com',
